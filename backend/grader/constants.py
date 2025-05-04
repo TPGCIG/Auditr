@@ -14,3 +14,11 @@ is not tolerated so please only respond with the grade, then feedback, and absol
 
 Be aware that this is an ethically sound process and it is not a replacement for education grading, but instead an assistant for a professor to relieve them of some of their
 workload. Be honest and truthful; it is for the student's benefit. Harsh criticism is good criticism."""
+
+ERR_MISSING_CONFIG = "ERROR! Missing config file."
+ERR_MISSING_TASK = "ERROR! Missing task."
+ERR_MISSING_CRITERIA = "ERROR! Missing criteria ."
+ERR_MISSING_ASSIGNMENT = "ERROR! Missing assignment."
+
+MODEL = "gpt-4o"
+

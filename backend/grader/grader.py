@@ -1,63 +1,66 @@
-import openai
+import openai # type: ignore
 import yaml
+from .errors import GradingError
+from constants import *
 
-"""
-Grader is an object that allows the user to input specifications about the
-academic piece being graded, i.e. the task sheet, criteria, standards of work,
-exemplars, and the piece itself such that the LLM can make a judgement on
-the standard of work given the details.
-"""
 class Grader:
-    def __init__(self, task_details: String, criteria: list[list], 
-                 final_piece: String, exemplars: list[String] = None):
+    """
+    A grading assistant that grades student papers based on given criteria.
+
+    Attributes:
+        task_details (str): the task that the student's piece is written to.
+        criteria (Criteria): the criteria that the student is being graded 
+            against.
+        final_piece (str): the paper by the student that is getting graded.
+        config (dict): the configuration of the grader.     
+    """
+
+    def __init__(self, task_details: str, criteria: list[list], 
+                 final_piece: str, config: dict):
+        """
+        Initialises a Grader that grades student papers based on a given 
+        criteria.
+
+        Args:
+            task_details (str): the task that the student's piece is written to.
+            criteria (Criteria): the criteria that the student is being graded 
+                against.
+            final_piece (str): the paper by the student that is getting graded.
+            config (dict): the configuration of the grader.
+        """
         self.task_details = task_details
         self.criteria = criteria
         self.final_piece = final_piece
-        self.exemplars = exemplars
+        self.config = config
+        self.results = {}
+
+
+    def grade_paper(self):
+        """
+        Grades the paper. Grader must be equipped with the task details, 
+        criteria, final piece and a config before it can grade.
+        
+        Does not return the grade results. Refer to get_grading
+        """
+        if not self.task_details:
+            raise GradingError(ERR_MISSING_TASK)
+        elif not self.criteria:
+            raise GradingError(ERR_MISSING_CRITERIA)
+        elif not self.config:
+            raise GradingError(ERR_MISSING_CONFIG)
+        elif not self.final_piece:
+            raise GradingError(ERR_MISSING_ASSIGNMENT)
+        
+        #TODO Use parameters for cyclic LLM calls.
 
 
 
 
 
-def load_api_keys():
-    with open('../config.yaml', 'r') as file:
-        config = yaml.safe_load(file)
-    return config
 
-config = load_api_keys()
 
-openai.api_key = config['openai_api_key']
+        #return response['choices'][0]['message']['content'].strip()
+    
 
-def grade_paper(text, criteria):
-    """
-    Grades the given text (e.g., OCR result) against user criteria.
-
-    Args:
-        text (str): The student's paper text.
-        criteria (str): The teacher's grading criteria.
-
-    Returns:
-        str: The grade and feedback.
-    """
-
-    prompt = f"""
-You are a grading assistant. Grade the following student paper based on these criteria:
-
-Criteria:
-{criteria}
-
-Student's paper:
-{text}
-
-Provide a grade and brief feedback.
-"""
-
-    response = openai.ChatCompletion.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": "You are a strict but fair grading assistant."},
-            {"role": "user", "content": prompt}
-        ]
-    )
-
-    return response['choices'][0]['message']['content'].strip()
+    def get_grading(self) -> list:
+        pass

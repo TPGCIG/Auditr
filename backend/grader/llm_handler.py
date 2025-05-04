@@ -1,45 +1,63 @@
-import openai
+import openai # type: ignore
 import json
 from typing import Dict, Any
-
-MODEL = "gpt-4o"
-
-
-def create_llm_messages(config: Dict[Any]) -> list[Dict]:
+from constants import *
+import yaml
+import tiktoken # type: ignore
 
 
-
-def grade_paper(text: String, criteria: Criteria)
-"""
-    Grades the given text against criteria given through cyclicly asking
-    through each criteria standard.
-
-    Args:
-        text (str): The student's paper text.
-        criteria (Criteria): The teacher's grading criteria.
-
-    Returns:
-        str: The grade and feedback.
+class LLMHandler:
     """
+    LLM handler object interacts with the LLM API calls for the grader.
 
-    prompt = f"""
-You are a grading assistant. Grade the following student paper based on these criteria:
+    Attributes:
+        yaml_path: The path of the .yaml file that contains the API key.
+    """
+    def __init__(self, yaml_path: str):
+        """
+        Initialises a LLMHandler object.
 
-Criteria:
-{criteria}
+        Args:
+            yaml_path: Path to the yaml file which includes the api key.
+        """
+        with open(yaml_path, 'r') as file:
+            config = yaml.safe_load(file)
+        
+        openai.api_key = config['openai_api_key']
 
-Student's paper:
-{text}
 
-Provide a grade and brief feedback.
-"""
+    
+    
 
-    response = openai.ChatCompletion.create(
-        model=MODEL,
-        messages=[
-            {"role": "system", "content": "You are a strict but fair grading assistant."},
-            {"role": "user", "content": prompt}
-        ]
-    )
+    def create_system_messages(config: Dict[Any]) -> list[Dict]:
+        """
+        Creates LLM call messages that include the information regarding marking.
 
-    return response['choices'][0]['message']['content'].strip()
+        Args:
+            config (dict): The config file for the grader.
+
+        Returns:
+            List of dictionaries that contain system message info.
+        """
+        messages = []
+
+        # Intro message giving context.
+        messages.append(
+            {
+                "role": "system", 
+                "content": INTRODUCTION_MESSAGE.format(config)
+            }
+        )
+        
+    
+    
+    
+response = openai.ChatCompletion.create(
+            model=MODEL,
+            messages=[
+                {"role": "system", "content": "You are a strict but fair grading assistant."},
+                #{"role": "user", "content": prompt}
+            ]
+        )
+
+

@@ -1,6 +1,24 @@
 import openai
 import yaml
 
+"""
+Grader is an object that allows the user to input specifications about the
+academic piece being graded, i.e. the task sheet, criteria, standards of work,
+exemplars, and the piece itself such that the LLM can make a judgement on
+the standard of work given the details.
+"""
+class Grader:
+    def __init__(self, task_details: String, criteria: list[list], 
+                 final_piece: String, exemplars: list[String] = None):
+        self.task_details = task_details
+        self.criteria = criteria
+        self.final_piece = final_piece
+        self.exemplars = exemplars
+
+
+
+
+
 def load_api_keys():
     with open('../config.yaml', 'r') as file:
         config = yaml.safe_load(file)

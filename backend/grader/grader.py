@@ -2,6 +2,7 @@ import openai # type: ignore
 import yaml
 from .errors import GradingError
 from constants import *
+from grading_context import GradingContext
 
 class Grader:
     """
@@ -15,8 +16,7 @@ class Grader:
         config (dict): the configuration of the grader.     
     """
 
-    def __init__(self, task_details: str, criteria: list[list], 
-                 final_piece: str, config: dict):
+    def __init__(self, grading_context: GradingContext):
         """
         Initialises a Grader that grades student papers based on a given 
         criteria.
@@ -28,11 +28,12 @@ class Grader:
             final_piece (str): the paper by the student that is getting graded.
             config (dict): the configuration of the grader.
         """
-        self.task_details = task_details
-        self.criteria = criteria
-        self.final_piece = final_piece
-        self.config = config
+        self.task = grading_context.task
+        self.criteria = grading_context.criteria
+        self.assignment = grading_context.assignment
+        self.config = grading_context.config
         self.results = {}
+
 
 
     def grade_paper(self):

@@ -4,6 +4,8 @@ from typing import Dict, Any
 from constants import *
 import yaml
 import tiktoken # type: ignore
+from grading_context import GradingContext
+from criteria import Criterion, Criteria
 
 
 class LLMHandler:
@@ -13,7 +15,7 @@ class LLMHandler:
     Attributes:
         yaml_path: The path of the .yaml file that contains the API key.
     """
-    def __init__(self, yaml_path: str):
+    def __init__(self, yaml_path: str, grading_context: GradingContext):
         """
         Initialises a LLMHandler object.
 
@@ -24,12 +26,18 @@ class LLMHandler:
             config = yaml.safe_load(file)
         
         openai.api_key = config['openai_api_key']
+        self.grading_context = grading_context
 
+    def set_criterion(self, criterion: Criterion):
+        """
+        Set criterion for the LLM Handler to grade the paper again.
 
+        Args:
+            criterion: New criterion.
+        """
+        self.grading_context.criterion = criterion
     
-    
-
-    def create_system_messages(config: Dict[Any]) -> list[Dict]:
+    def create_system_messages(self) -> list[Dict]:
         """
         Creates LLM call messages that include the information regarding marking.
 
@@ -45,19 +53,65 @@ class LLMHandler:
         messages.append(
             {
                 "role": "system", 
-                "content": INTRODUCTION_MESSAGE.format(config)
+                "content": INTRODUCTION_MESSAGE.format(
+                    self.grading_context.config['grade_level']
+                    )
+            }
+        )
+
+    def create_user_messages(self) -> list[Dict]:
+        """
+        Creates the user messages sent to the LLM API model.
+
+        Returns:
+            list of messages to send to the API.
+        """
+        messages = []
+        messages.append(
+            {
+                "role": "user",
+                "content": TASK_PREAMBLE+self.grading_context.task
+            }
+
+        )
+
+        messages.append(
+            {
+                "role": "user", 
+                "content": ASSIGNMENT_PREAMBLE+self.grading_context.assignment
             }
         )
         
-    
-    
-    
-response = openai.ChatCompletion.create(
-            model=MODEL,
-            messages=[
-                {"role": "system", "content": "You are a strict but fair grading assistant."},
-                #{"role": "user", "content": prompt}
-            ]
+        messages.append(
+            {
+                "role": "user",
+                "content": (
+                    CRITERIA_PREAMBLE + "\n" +
+                    "\n".join(f"{i+1}. {c}" for i, c in enumerate(
+                        self.grading_context.criterion
+                    ))
+                )
+            }
         )
 
+    def create_messages(self) -> list[Dict]:
+        """
+        Combines the system and user messages.
 
+        Returns:
+            a list of all messages for the LLM API call.
+        """
+        return self.create_system_messages() + self.create_user_messages()
+
+    def generate_response(self) -> dict:
+        """
+        Calls the LLM API for the grading process for a singular criterion
+
+        Returns:
+            a dictionary of all the data from the API call. Format TBD
+        """
+        response = openai.ChatCompletion.create(
+                model=LLM_MODEL,
+                messages=self.create_messages()
+            )
+        return response

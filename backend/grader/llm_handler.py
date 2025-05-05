@@ -1,4 +1,4 @@
-import openai # type: ignore
+from openai import OpenAI # type: ignore
 import json
 from typing import Dict, Any
 from constants import *
@@ -6,6 +6,7 @@ import yaml
 import tiktoken # type: ignore
 from grading_context import GradingContext
 from criteria import Criterion, Criteria
+from errors import GradingError
 
 
 class LLMHandler:
@@ -25,18 +26,23 @@ class LLMHandler:
         with open(yaml_path, 'r') as file:
             config = yaml.safe_load(file)
         
-        openai.api_key = config['openai_api_key']
+        self.client = OpenAI(api_key = config['openai_api_key'])
         self.grading_context = grading_context
+        self.criterion_index = 0
 
-    def set_criterion(self, criterion: Criterion):
+    def next_criterion(self) -> int:
         """
-        Set criterion for the LLM Handler to grade the paper again.
+        Index the current criterion to the next one.
 
-        Args:
-            criterion: New criterion.
+        Returns:
+            0 if the indexing was a success, 1 otherwise
         """
-        self.grading_context.criterion = criterion
+        if (self.criterion_index + 1 >= len(self.grading_context.criteria)):
+            return 1
     
+        self.criterion_index += 1
+        return 0
+
     def create_system_messages(self) -> list[Dict]:
         """
         Creates LLM call messages that include the information regarding marking.
@@ -52,7 +58,7 @@ class LLMHandler:
         # Intro message giving context.
         messages.append(
             {
-                "role": "system", 
+                "role": "developer", 
                 "content": INTRODUCTION_MESSAGE.format(
                     self.grading_context.config['grade_level']
                     )
@@ -81,14 +87,14 @@ class LLMHandler:
                 "content": ASSIGNMENT_PREAMBLE+self.grading_context.assignment
             }
         )
-        
+
         messages.append(
             {
                 "role": "user",
                 "content": (
                     CRITERIA_PREAMBLE + "\n" +
                     "\n".join(f"{i+1}. {c}" for i, c in enumerate(
-                        self.grading_context.criterion
+                        self.grading_context.criteria[self.criterion_index]
                     ))
                 )
             }
@@ -110,8 +116,8 @@ class LLMHandler:
         Returns:
             a dictionary of all the data from the API call. Format TBD
         """
-        response = openai.ChatCompletion.create(
+        response = self.client.chat.completions.create(
                 model=LLM_MODEL,
                 messages=self.create_messages()
             )
-        return response
+        return response.choices[0].message.content

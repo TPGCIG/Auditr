@@ -1,22 +1,40 @@
-import grader
+#import grader
+
+from openai import OpenAI
+import yaml
 
 
 def main():
-    # Example OCR text from a student's handwritten paper
-    ocr_text = """
-    Photosynthesis is the process plants use to make food using sunlight, water, and air.
+    
+
+    with open('./config.yaml', 'r') as file:
+        config = yaml.safe_load(file)    
+
+    client = OpenAI(api_key=config['openai_api_key'])
+    
+    assignment_text = """
+    Photosynthesis is the process by which green plants convert sunlight into energy. 
+    It takes in carbon dioxide and water and produces oxygen and glucose.
     """
 
-    # Example grading criteria from the teacher
-    criteria = """
-        
-    """
+    criteria_text = "Accuracy of scientific explanation about photosynthesis."
 
-    # Call your grading function!
-    result = grader.grade_paper(ocr_text, criteria)
+    messages = [
+    {"role": "developer", "content": "You are a strict but fair science teacher grading student answers."},
+    {"role": "user", "content": f"Here is the student's assignment:\n\n{assignment_text}\n\nGrade it based on this criteria: {criteria_text}.\nGive a score (1 = excellent, 2 = good, 3 = needs improvement), and then explain your reasoning."}
+    ]
 
-    print("=== Grade & Feedback ===")
-    print(result)
+    completion = client.chat.completions.create(
+        model="gpt-4o",  # or "gpt-3.5-turbo" for cheaper calls
+        messages=messages
+    )
+
+    # Extract and print the reply
+    print(completion.choices[0].message.content)
+    
+
+    
+    
 
 
 

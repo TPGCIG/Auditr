@@ -13,12 +13,11 @@ TASK_PREAMBLE = "This is the assignment task:\n\n"
 ASSIGNMENT_PREAMBLE = "This is the student's assignment piece:\n\n"
 CRITERIA_PREAMBLE = "This is the criterion you must mark against:\n\n"
 
-
-
 ERR_MISSING_CONFIG = "ERROR! Missing config file."
 ERR_MISSING_TASK = "ERROR! Missing task."
 ERR_MISSING_CRITERIA = "ERROR! Missing criteria ."
 ERR_MISSING_ASSIGNMENT = "ERROR! Missing assignment."
+ERR_END_OF_CRITERIA = "ERROR! Criterion index does not exist."
 
 LLM_MODEL = "gpt-4o"
 

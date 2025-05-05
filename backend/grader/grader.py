@@ -1,4 +1,4 @@
-import openai # type: ignore
+
 import yaml
 from .errors import GradingError
 from constants import *
@@ -15,7 +15,6 @@ class Grader:
         final_piece (str): the paper by the student that is getting graded.
         config (dict): the configuration of the grader.     
     """
-
     def __init__(self, grading_context: GradingContext):
         """
         Initialises a Grader that grades student papers based on a given 
@@ -33,8 +32,6 @@ class Grader:
         self.assignment = grading_context.assignment
         self.config = grading_context.config
         self.results = {}
-
-
 
     def grade_paper(self):
         """
@@ -54,14 +51,18 @@ class Grader:
         
         #TODO Use parameters for cyclic LLM calls.
 
+        responses = []
+
+        while 
 
 
 
 
 
 
-        #return response['choices'][0]['message']['content'].strip()
+
+        return response['choices'][0]['message']['content'].strip()
     
 
     def get_grading(self) -> list:
-        pass
+        return self.results

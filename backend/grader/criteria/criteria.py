@@ -20,6 +20,19 @@ class Criteria:
     def __init__(self, grade_level: int = 0):
         self.criteria = []
         self.grade_level = grade_level
+        self.current_criterion = 0;
+    
+    def index_criterion(self):
+        """
+
+        Indexes the current criterion to the next.
+
+        Returns 1 if there is no following one.
+        """
+        if (self.current_criterion + 1 >= len(self.criteria)):
+            return 1
+        self.criterion_index += 1
+        return 0
 
     def set_criteria(self, criteria: list[list]):
         self.criteria = criteria
@@ -29,3 +42,6 @@ class Criteria:
 
     def add_criterion(self, criterion: list):
         self.criteria.append(criterion)
+
+    def get_current_criterion(self):
+        return self.criteria[self.current_criterion]

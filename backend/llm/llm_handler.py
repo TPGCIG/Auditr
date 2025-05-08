@@ -1,8 +1,6 @@
-from backend.grader.constants import LLM_MODEL
 from openai import OpenAI # type: ignore
-import json
-from typing import Dict, Any
-import yaml
+from errors import GenerationError
+from constants import *
 import tiktoken # type: ignore
 
 
@@ -11,65 +9,81 @@ class LLMHandler:
     LLM handler object interacts with the LLM API calls for the grader.
 
     Attributes:
-        yaml_path: The path of the .yaml file that contains the API key.
+        api_key (str): The API key 
     """
-    def __init__(
-        self, api_key: str, developer_messages: list[dict],
-        user_messages: list[dict]
-    ):
+    def __init__(self, api_key: str):
         """
         Initialises a LLMHandler object.
 
         Args:
-            messages: Messages for the api to call with
+            api_key: The OPENAI api key.
         """
-        
-        self.client = OpenAI(api_key)
-        self.user_messages = user_messages
-        self.dev_messages = developer_messages
+        self._client = OpenAI(api_key)
+        self._user_messages = None
+        self._dev_messages = None
     
     def set_developer_messages(self, messages: list[dict]):
         """
-        Sets the developer messages for the API call,
+        Sets the developer messages for the API call.
+        All functions that set messages reset the API response to None.
         
         Parameters:
             messages (list[dict]): The messages.
         """
-        self.dev_messages = messages
+        self._dev_messages = messages
 
     def set_user_messages(self, messages: list[dict]):
         """
         Sets the user messages for the API call,
+        All functions that set messages reset the API response to None.
         
         Parameters:
             messages (list[dict]): The messages.
         """
-        self.user_messages = messages
+        self._user_messages = messages
 
     def _combine_messages(self) -> list[dict]:
         """
         Returns the full message list for the API call.
         """
-        return self.set_developer_messages() + self.set_user_messages()
+        if not self._dev_messages:
+            raise GenerationError(ERR_NO_DEV_MSG)
+        if not self._user_messages:
+            raise GenerationError(ERR_NO_USER_MSG)
+        
+        return self._dev_messages + self._user_messages
 
-    def _generate_response(self) -> dict:
+    def generate_response(self):
         """
-        Calls the LLM API for the grading process for a singular criterion
-
+        Calls the LLM API for the grading process for a singular criterion.
+        
         Returns:
-            a dictionary of all the data from the API call. Format TBD
+            (str) The API response
         """
-        response = self.client.chat.completions.create(
+        if not self._dev_messages:
+            raise GenerationError(ERR_NO_DEV_MSG)
+        if not self._user_messages:
+            raise GenerationError(ERR_NO_USER_MSG)
+
+        response = self._client.chat.completions.create(
                 model=LLM_MODEL,
-                messages=self._combine_messages
+                messages=self._combine_messages()
             )
-        return response.choices[0].message.content 
+        
+        return response
     
-    def get_response(self) -> str:
+    def get_token_count(self) -> int:
         """
-        Gets the response from the API call.
+        Gets the token count of a request without sending it.
+        Useful for estimating costs.
 
         Returns:
-          response.
+            Tokens (int)
         """
-        return self._generate_response()
+        encoding = tiktoken.encoding_for_model(LLM_MODEL)
+        token_count = 0
+
+        for message in self._combine_messages():
+            token_count += len(encoding.encode(message["content"]))
+
+        return token_count

@@ -19,5 +19,3 @@ ERR_MISSING_CRITERIA = "ERROR! Missing criteria ."
 ERR_MISSING_ASSIGNMENT = "ERROR! Missing assignment."
 ERR_END_OF_CRITERIA = "ERROR! Criterion index does not exist."
 
-LLM_MODEL = "gpt-4o"
-

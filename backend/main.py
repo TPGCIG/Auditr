@@ -1,8 +1,8 @@
 from dotenv import load_dotenv # type: ignore
 from openai import OpenAI # type: ignore
 import os
-from grader import LLM
-
+from grader.grader import Grader
+from llm.llm_handler import LLMHandler
 
 
 def main():
@@ -10,6 +10,9 @@ def main():
     load_dotenv()
     os.environ["OPENAI_API_KEY"]
 
+    llm_handler = LLMHandler(os.environ["OPENAI_API_KEY"])
+    grader = Grader()
+    grader
     
 
 

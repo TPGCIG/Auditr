@@ -1,11 +1,3 @@
-
-class Criterion:
-    def __init__(self, information: list = []):
-        self.criterion = information
-
-    def add_level(self, information: str):
-        self.criterion.append(information)
-
 class Criteria:
     """
     A criteria is a matrix where:
@@ -17,31 +9,62 @@ class Criteria:
 
     Criteria layout for writing is gonna be:
     """
-    def __init__(self, grade_level: int = 0):
+    def __init__(self, grade_level: int | None = None):
         self.criteria = []
         self.grade_level = grade_level
         self.current_criterion = 0;
     
-    def index_criterion(self):
+    def __iter__(self):
         """
-
-        Indexes the current criterion to the next.
-
-        Returns 1 if there is no following one.
+        Resets and returns the iterator (self).
         """
-        if (self.current_criterion + 1 >= len(self.criteria)):
-            return 1
-        self.criterion_index += 1
-        return 0
+        self._current_index = 0
+        return self
+    
+    def __next__(self):
+        """
+        Returns the next criterion in iteration.
+        """
+        if self._current_index >= len(self.criteria):
+            raise StopIteration
+        criterion = self.criteria[self._current_index]
+        self._current_index += 1
+        return criterion
 
-    def set_criteria(self, criteria: list[list]):
+    def set_criteria(self, criteria: list[list[str]]):
+        """
+        Sets the criteria fully:
+
+        Parameters:
+            criteria (list[list]): the full 2d matrix.
+        """
         self.criteria = criteria
 
-    def get_criteria(self) -> list[Criterion]:
-        return self.criteria + ["md:", self.grade_level]
+    def get_criteria(self) -> list[list[str]]:
+        """
+        Gets the criteria.
 
-    def add_criterion(self, criterion: list):
+        Returns:
+            The criteria in a 2d matrix.
+        """
+        return self.criteria
+
+    def add_criterion(self, criterion: list[str]):
+        """
+        Adds a criterion to the right side of the criteria.
+
+        Parameters:
+            criterion (list[str]): A criterion as an array.
+        """
         self.criteria.append(criterion)
 
     def get_current_criterion(self):
-        return self.criteria[self.current_criterion]
+        """
+        Gets the current criterion based on the index.
+
+        Returns:
+            The criterion list.
+        """
+        if not self.criteria:
+            return None
+        return self.criteria[self._current_index]

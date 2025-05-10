@@ -121,6 +121,5 @@ class Grader:
             failsafe_count += 1
             if failsafe_count >= 9:
                 break
-            
 
         return responses

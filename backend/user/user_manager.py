@@ -10,3 +10,6 @@ class UserManager:
 
     def get_user(self, user_id: int) -> User:
         return self._users.get(user_id)
+    
+    def get_users(self) -> dict[User]:
+        return self._users

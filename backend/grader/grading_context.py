@@ -1,6 +1,6 @@
 from typing import Dict, Any, List
 from dataclasses import dataclass
-from criteria import Criterion, Criteria
+from .criteria.criteria import Criteria
 
 @dataclass
 class GradingContext:

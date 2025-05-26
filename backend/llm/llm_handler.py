@@ -1,6 +1,6 @@
 from openai import OpenAI # type: ignore
-from errors import GenerationError
-from constants import *
+from .errors import GenerationError
+from .constants import *
 import tiktoken # type: ignore
 
 
@@ -18,7 +18,7 @@ class LLMHandler:
         Args:
             api_key: The OPENAI api key.
         """
-        self._client = OpenAI(api_key)
+        self._client = OpenAI(api_key=api_key)
         self._user_messages = None
         self._dev_messages = None
     

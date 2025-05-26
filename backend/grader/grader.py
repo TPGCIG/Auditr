@@ -1,8 +1,8 @@
 import yaml
 from .errors import GradingError
-from constants import *
-from grading_context import GradingContext
-from ..llm.llm_handler import LLMHandler
+from .constants import *
+from .grading_context import GradingContext
+from llm.llm_handler import LLMHandler
 
 class Grader:
     """

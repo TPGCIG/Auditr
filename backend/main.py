@@ -27,9 +27,9 @@ def upload():
     # return success
     return jsonify(message="Successfully uploaded pdf!")
 
-@app.route('/api/result', methods="GET")
+@app.route('/api/result', methods=["GET"])
 def result():
-    
+
 
     return jsonify()
 

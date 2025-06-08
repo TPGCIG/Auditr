@@ -1,13 +1,19 @@
 class Criteria:
     """
     A criteria is a matrix where:
-        Rows represent a standard of work, usually from A, B, C, D, E or different
+        Rows represent a standard of work, usually from A, B, C, D, E or 
+        different
+        
         Columns represent a category of work that the assignment piece expects 
 
     The row work standard usually only differs by a few key terms which may reduce
     computational costs in asking GPT questions by isolating them.
 
-    Criteria layout for writing is gonna be:
+    POTENTIAL IMPROVEMENT!??!111!! TODO fix
+
+    Criteria layout for writing is gonna be 2d matrix where:
+        Top level list is a list of criteria n long - 0 is highest, n lowest. 
+        Low level list is a list of criterion expectations - unordered.
     """
     def __init__(self, grade_level: int | None = None):
         self.criteria = []

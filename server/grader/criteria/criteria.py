@@ -14,6 +14,8 @@ class Criteria:
     Criteria layout for writing is gonna be 2d matrix where:
         Top level list is a list of criteria n long - 0 is highest, n lowest. 
         Low level list is a list of criterion expectations - unordered.
+
+    Java ass file lmfao
     """
     def __init__(self, grade_level: int | None = None):
         self.criteria = []

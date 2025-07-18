@@ -9,14 +9,7 @@ import os
 print("Current Working Directory:", os.getcwd())
 
 def read_pdf(file_path: str) -> str:
-    """Extracts text from a PDF file using OCR (Tesseract)"""
+    """Extracts text from a PDF file using pdypdf"""
 
     # Convert PDF pages to images
-    pages: List[Image.Image] = convert_from_path(file_path)
-
-    # Run OCR on each image
-    text = ""
-    for page in pages:
-        text += pytesseract.image_to_string(page)
-
-    return text
+    pdf_reader = pypdf.PdfReader(file_path)

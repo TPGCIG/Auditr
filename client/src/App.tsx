@@ -3,12 +3,13 @@ import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react
 import AssignmentPDFInput from './components/AssignmentPDFInput';
 import InputInterface from './components/InputInterface';
 import './App.css';
+import './index.css'
+import TestComponent from './components/TestComponent';
 
 const Home: React.FC = () => {
   return (
-        <div className="App bg-white  min-h-screen">
-          <InputInterface/>
-
+        <div className="App  min-h-screen">
+			<InputInterface/>
         </div>
     )
 }

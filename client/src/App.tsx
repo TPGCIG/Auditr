@@ -1,14 +1,13 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import AssignmentPDFInput from './components/AssignmentPDFInput';
-import TaskInput from './components/TaskInput';
+import InputInterface from './components/InputInterface';
+import './App.css';
 
 const Home: React.FC = () => {
   return (
         <div className="App bg-white  min-h-screen">
-          <h1 className='text-center text-3xl font-bold tracking-tight'>Upload</h1>
-          <AssignmentPDFInput />
-		<TaskInput />
+          <InputInterface/>
 
         </div>
     )

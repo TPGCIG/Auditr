@@ -27,7 +27,7 @@ class Grader:
         self._grading_context = grading_context
         self._llm_handler = llm_handler
 
-    def _create_developer_messages(self) -> list[dict]:
+    def _create_developer_messages(self) -> list[dict[str, str]]:
         """
         Creates LLM call messages that include the information regarding marking.
 
@@ -93,7 +93,7 @@ class Grader:
         Grades the paper. Grader must be equipped with the task details, 
         criteria, final piece and a config before it can grade.
         
-        Does not return the grade results. Refer to get_grading
+        Returns grading responses
         """
         if not self._grading_context.task:
             raise GradingError(ERR_MISSING_TASK)

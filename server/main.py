@@ -1,48 +1,56 @@
-import os
-from dotenv import load_dotenv # type: ignore
+from typing import Any
+from fastapi import FastAPI
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from werkzeug.utils import secure_filename
-
-app = Flask(__name__)
-CORS(app)
-
-@app.route('/api/upload', methods=["POST"])
-def upload():
-
-    pdf = request.files["file"]
-    # if no file given / no name / no file.
-    if not pdf or not pdf.filename:
-        return jsonify(message="No file found!"), 400
-
-    # obv
-    if not pdf.filename.endswith(".pdf"):
-        return jsonify(message="Not a pdf"), 400
-
-    # clean and save the file
-    filename = secure_filename(pdf.filename)
-    pdf.save(os.path.join("uploads", filename))
-
-    # return success
-    return jsonify(message="Successfully uploaded pdf!")
-
-@app.route('/api/result', methods=["GET"])
-def result():
-
-
-    return jsonify()
-
-
-if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+from grader.grading_context import GradingContext
+from grader.grader import Grader
 
 
 
 
+class Submission(BaseModel):
+    task: str
+    assignment: str
+    criteria: str
+
+app = FastAPI()
+
+origins = [
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/")
+def read_root():
+    from parsers.table_reader import TableReader
+    TableReader("files/file1.pdf")   
+    return {"Hello": "Hi"}
+
+@app.post("/api/submit")
+def submit(submission: Submission) -> Any:
+    
+    config = {'grade_level': 12}
 
 
 
 
+    #grading_context = GradingContext(submission.task, submission.criteria, submission.assignment, config)
+    #grader = Grader()
+    
+    
+    
+    
+    return f"Received {submission}"
 
+    
+    
+    return 
 

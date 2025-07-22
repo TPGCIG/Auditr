@@ -9,18 +9,40 @@ const InputInterface: React.FC = () => {
         assignment: ''
     })
 
-    function handleSubmit(e) {
-        e.preventDefault();
+    
+    const handleSubmit = async (e: React.FormEvent) => {
+            e.preventDefault()
 
-        
-        
+            const payload = {
+                task: fields.task,
+                assignment: fields.assignment,
+                criteria: fields.criteria
+            }
 
+            try {
+                const response = await fetch('http://localhost:8000/api/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
 
+                if (!response.ok) {
+                    throw new Error('Failed to submit');
+                }
+
+                const result = await response.json();
+                console.log('Response'+result)
+
+            } catch (error) {
+                console.log(error)
+            }
     }
 
 
     return (
-        <>
+        <form onSubmit={handleSubmit}>
             <div className="grid-container">
                 <div className="item1">
                     <div>
@@ -73,11 +95,14 @@ const InputInterface: React.FC = () => {
                         ></textarea>
                     </div>      
                 </div>  
-                <button onClick={handleSubmit()} className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 btn-submit'>
-                    Hello
+                <button 
+                    type='submit'
+                    className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 btn-submit'
+                >
+                    Submit
                 </button>
             </div>
-        </>
+        </form>
     )
 
 
